@@ -45,7 +45,7 @@
 			isa = PBXGroup;
 			children = (
 				6A71F9871C765FAB0004C1C1 /* SDL2.framework */,
-				6A71F97D1C765F550004C1C1 /* opensteno */,
+				6A71F97D1C765F550004C1C1 /* source */,
 				6A71F97C1C765F550004C1C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,11 +58,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6A71F97D1C765F550004C1C1 /* opensteno */ = {
+		6A71F97D1C765F550004C1C1 /* source */ = {
 			isa = PBXGroup;
 			children = (
 				6A71F9851C765F820004C1C1 /* sdlstenotest.cpp */,
 			);
+			name = source;
 			path = opensteno;
 			sourceTree = "<group>";
 		};
@@ -248,6 +249,7 @@
 				6A71F9841C765F550004C1C1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
