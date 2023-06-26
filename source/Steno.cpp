@@ -8,6 +8,9 @@
 #include <string.h>
 #include <thread>
 #include <libnotify/notify.h>
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include <X11/extensions/XTest.h>
 
 using namespace std;
 
@@ -28,6 +31,25 @@ const int RX_AXIS = 3;
 const int RY_AXIS = 4;
 const int RZ_AXIS = 5;
 const int MAX_AXIS = 5;
+const int GAMEPAD_REGISTER_ZONE = 20000;
+
+void simulateKeyPress(Display* display, const char* character)
+{
+  KeyCode key = XKeysymToKeycode(display, XStringToKeysym(character));
+  XTestFakeKeyEvent(display, key, True, 0); //press
+  XSync(display, False);
+  XTestFakeKeyEvent(display, key, False, 0); //release
+  XSync(display, False);
+  XFlush(display);
+}
+
+void showNotification(const char* message) {
+  notify_init("Opensteno");
+  NotifyNotification* notification = notify_notification_new("Opensteno", message, NULL);
+  notify_notification_show(notification, NULL);
+  // Free the memory used by the notification object
+  g_object_unref(G_OBJECT(notification));
+}
 
 int getFileDescriptor(){
   int fileDescriptor = open("/dev/input/js0", O_RDONLY);
@@ -41,27 +63,23 @@ int getFileDescriptor(){
 
 int main()
 {
-  // Initialize the libnotify library
-  notify_init("My Program");
-
-  // Create a notification object with the desired message and title
-  NotifyNotification* notification = notify_notification_new("Title", "Message", NULL);
-
-  // Show the notification
-  notify_notification_show(notification, NULL);
-
-  // Free the memory used by the notification object
-  g_object_unref(G_OBJECT(notification));
-
+  showNotification("Listening for gamepad input");
+  //open a display
+  Display* display = XOpenDisplay(NULL);
+  if (display == NULL){
+    printf("Error: Unable to connect to X11\n");
+    return 1;
+  }
   // Gamepad init
   int fileDescriptor = getFileDescriptor();
-  cout << "Hello, world!" << endl;
+  cout << "Opensteno Started" << endl;
   int numButtons;
   int numAxes;
   ioctl(fileDescriptor, JSIOCGAXES, &numAxes);
   ioctl(fileDescriptor, JSIOCGBUTTONS, &numButtons);
-  unsigned char buttonStates[numButtons];
+  unsigned char buttonStates[numButtons]={0};
   int axisValues[numAxes];
+  memset(axisValues, 0, sizeof(axisValues));
   cout << "Reading Gamepad" << endl;
   std::thread thread;
   while (1) {
@@ -76,38 +94,39 @@ int main()
     if (event.type == JS_EVENT_BUTTON) {
       printf("Button %u state: %u\n", event.number, event.value);
       buttonStates[event.number] = event.value;
+      if (axisValues[X_AXIS] < -GAMEPAD_REGISTER_ZONE) {
+        switch (event.number) {
+        case X_BUTTON:
+          simulateKeyPress(display, "a");
+          break;
+        case A_BUTTON:
+          simulateKeyPress(display, "b");
+          break;
+        case B_BUTTON:
+          simulateKeyPress(display, "c");
+          break;
+        }
+
+        cout << "Left analog stick pushed to the left" << endl;
+      }
     } else if (event.type == JS_EVENT_AXIS) {
       printf("Axis %u value: %d\n", event.number, event.value);
       axisValues[event.number] = event.value;
     }
 
-    if (event.type == JS_EVENT_BUTTON && event.number == 0 && event.value == 1 && event.type & ~JS_EVENT_INIT == JS_EVENT_AXIS && event.number == 0 && event.value < -32767) {
-      printf("Left analogue stick to the left and X button pushed\n");
-    }
-    if (axisValues[X_AXIS] < -20000) {
-      cout << "Left analog stick pushed to the left" << std::endl;
+    if (axisValues[X_AXIS] > GAMEPAD_REGISTER_ZONE) {
+      cout << "Left analog stick pushed to the right" << endl;
     }
 
-    if (axisValues[X_AXIS] > 20000) {
-      cout << "Left analog stick pushed to the right" << std::endl;
+    if (axisValues[Y_AXIS] < -GAMEPAD_REGISTER_ZONE) {
+      cout << "Left analog stick pushed to the top" << endl;
     }
 
-    if (axisValues[Y_AXIS] < -20000) {
-      cout << "Left analog stick pushed to the top" << std::endl;
-    }
-
-    if (axisValues[Y_AXIS] > 20000) {
-      cout << "Left analog stick pushed to the bottom" << std::endl;
-    }
-
-    if (event.number == 0 && buttonStates[0] && axisValues[0] < -5000 && axisValues[1] < -5000) {
-      cout << "Left analog stick and X button pressed!" << std::endl;
-    }
-
-    if (event.type == JS_EVENT_AXIS && event.number == 0 && event.value < -32000 && event.type == JS_EVENT_BUTTON && event.number == X_BUTTON && event.value == 1) {
-      cout << "Left analogue stick to the left and X being pressed" << endl;
+    if (axisValues[Y_AXIS] > GAMEPAD_REGISTER_ZONE) {
+      cout << "Left analog stick pushed to the bottom" << endl;
     }
   }
   close(fileDescriptor);
+  XCloseDisplay(display);
   return 0;
 }
