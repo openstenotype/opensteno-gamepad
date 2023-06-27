@@ -201,25 +201,16 @@ int main()
         //    H
         //  W   L
         //    C
-        simulateKeyPress(display, layerButtonMaps[4].at(event.number));
-
-        // Layer 1
-        //   ###        <--
-        //    I           SPC
-        //  U   A      SHT   RTN
-        //    E
-      } else if (buttonStates[X_BUTTON] == 1) {
-        simulateKeyPress(display, "u");
-      } else if (buttonStates[A_BUTTON] == 1) {
-        simulateKeyPress(display, "e");
-      } else if (buttonStates[B_BUTTON] == 1) {
-        simulateKeyPress(display, "a");
-      } else if (buttonStates[Y_BUTTON] == 1) {
-        simulateKeyPress(display, "i");
       } else if (buttonStates[RB_BUTTON] == 1) {
         simulateKeyPress(display, "BackSpace");
+      }  else if (event.value == 1) {
+        // Layer 1
+        //   ###        <--
+        //    I
+        //  U   A
+        //    E
+        simulateKeyPress(display, layerButtonMaps[1].at(event.number));
       }
-
     } else if (event.type == JS_EVENT_AXIS) {
 
 
