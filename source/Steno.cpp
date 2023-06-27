@@ -10,7 +10,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
-
+#include <map>
 using namespace std;
 
 const int A_BUTTON = 0;
@@ -31,6 +31,8 @@ const int RY_AXIS = 4;
 const int RZ_AXIS = 5;
 const int MAX_AXIS = 5;
 const int GAMEPAD_REGISTER_ZONE = 20000;
+
+std::map<int, std::map<int, const char*>> layerButtonMaps;
 
 void showNotification(const char* message) {
   notify_init("Opensteno");
@@ -113,6 +115,12 @@ bool isRightAnalogueBottom(int axisValues[]) {
 
 int main()
 {
+  layerButtonMaps[1] = {{Y_BUTTON, "i"}, {X_BUTTON, "u"}, {A_BUTTON, "e"}, {B_BUTTON, "a"}};
+  layerButtonMaps[2] = {{Y_BUTTON, "d"}, {X_BUTTON, "r"}, {A_BUTTON, "n"}, {B_BUTTON, "t"}};
+  layerButtonMaps[3] = {{Y_BUTTON, "q"}, {X_BUTTON, "o"}, {A_BUTTON, "s"}, {B_BUTTON, "y"}};
+  layerButtonMaps[4] = {{Y_BUTTON, "h"}, {X_BUTTON, "w"}, {A_BUTTON, "c"}, {B_BUTTON, "l"}};
+  layerButtonMaps[5] = {{Y_BUTTON, "f"}, {X_BUTTON, "v"}, {A_BUTTON, "g"}, {B_BUTTON, "x"}};
+
   showNotification("Listening for gamepad input");
   //open a display
   Display* display = XOpenDisplay(NULL);
@@ -146,26 +154,13 @@ int main()
       printf("Button %u state: %u\n", event.number, event.value);
       buttonStates[event.number] = event.value;
 
-      // Layer 6 Left Analogue Stick to the top left
-      //   ###        ###
-      //    P
-      //  Z   M
-      //    B
       if (isAnalogueTopLeft(axisValues)) {
-        switch (event.number) {
-        case X_BUTTON:
-          simulateKeyPress(display, "z");
-          break;
-        case A_BUTTON:
-          simulateKeyPress(display, "b");
-          break;
-        case B_BUTTON:
-          simulateKeyPress(display, "m");
-          break;
-        case Y_BUTTON:
-          simulateKeyPress(display, "p");
-          break;
-        }
+        // Layer 6 Left Analogue Stick to the top left
+        //   ###        ###
+        //    P
+        //  Z   M
+        //    B
+        simulateKeyPress(display, layerButtonMaps[6].at(event.number));
       } else if (isAnalogueTopRight(axisValues)) {
       } else if (isAnalogueTop(axisValues)  && event.value == 1) {
         // Layer 3 Left Analogue Stick to the top
@@ -173,41 +168,15 @@ int main()
         //    Q
         //  O   Y
         //    S
-        switch (event.number) {
-        case X_BUTTON:
-          simulateKeyPress(display, "o");
-          break;
-        case A_BUTTON:
-          simulateKeyPress(display, "s");
-          break;
-        case B_BUTTON:
-          simulateKeyPress(display, "y");
-          break;
-        case Y_BUTTON:
-          simulateKeyPress(display, "q");
-          break;
-        }
+        simulateKeyPress(display, layerButtonMaps[3].at(event.number));
 
+      } else if (isAnalogueBottom(axisValues)  && event.value == 1) {
         // Layer 5 Left Analogue Stick to the bottom
         //   ###        ###
         //    F
         //  V   X
         //    G
-      } else if (isAnalogueBottom(axisValues)  && event.value == 1) {
-        switch (event.number) {
-        case X_BUTTON:
-          simulateKeyPress(display, "v");
-          break;
-        case A_BUTTON:
-          simulateKeyPress(display, "g");
-          break;
-        case B_BUTTON:
-         simulateKeyPress(display, "x");
-         break;
-        case Y_BUTTON:
-          simulateKeyPress(display, "f");
-          break;
-        }
+        simulateKeyPress(display, layerButtonMaps[5].at(event.number));
       } else if (isAnalogueLeft(axisValues) && event.value == 1) {
         // Layer 2 Left Analogue Stick to the left
         //   ###        3x <--
@@ -220,51 +189,29 @@ int main()
           simulateKeyPress(display, "BackSpace");
           simulateKeyPress(display, "BackSpace");
           break;
-        case X_BUTTON:
-          simulateKeyPress(display, "r");
-          break;
-        case A_BUTTON:
-          simulateKeyPress(display, "n");
-          break;
-        case B_BUTTON:
-          simulateKeyPress(display, "t");
-          break;
-        case Y_BUTTON:
-          simulateKeyPress(display, "d");
+        default:
+          simulateKeyPress(display, layerButtonMaps[2].at(event.number));
           break;
         }
 
         cout << "Left analog stick pushed to the left" << endl;
       } else if (isAnalogueRight(axisValues) && event.value == 1) {
-      // Layer 4 Left Analogue Stick to the right
-      //   ###        ###
-      //    H
-      //  W   L
-      //    C
-        switch (event.number) {
-        case X_BUTTON:
-          simulateKeyPress(display, "w");
-          break;
-        case A_BUTTON:
-          simulateKeyPress(display, "c");
-          break;
-        case B_BUTTON:
-          simulateKeyPress(display, "l");
-          break;
-        case Y_BUTTON:
-          simulateKeyPress(display, "h");
-          break;
-        }
+        // Layer 4 Left Analogue Stick to the right
+        //   ###        ###
+        //    H
+        //  W   L
+        //    C
+        simulateKeyPress(display, layerButtonMaps[4].at(event.number));
 
-      // Layer 1
-      //   ###        <--
-      //    I           SPC
-      //  U   A      SHT   RTN
-      //    E
+        // Layer 1
+        //   ###        <--
+        //    I           SPC
+        //  U   A      SHT   RTN
+        //    E
       } else if (buttonStates[X_BUTTON] == 1) {
         simulateKeyPress(display, "u");
       } else if (buttonStates[A_BUTTON] == 1) {
-      simulateKeyPress(display, "e");
+        simulateKeyPress(display, "e");
       } else if (buttonStates[B_BUTTON] == 1) {
         simulateKeyPress(display, "a");
       } else if (buttonStates[Y_BUTTON] == 1) {
