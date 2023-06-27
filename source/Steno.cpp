@@ -6,7 +6,6 @@
 #include <iostream>
 #include <unistd.h>
 #include <string.h>
-#include <thread>
 #include <libnotify/notify.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -113,10 +112,8 @@ int main()
   int axisValues[numAxes];
   memset(axisValues, 0, sizeof(axisValues));
   cout << "Reading Gamepad" << endl;
-  std::thread thread;
+  struct js_event event;
   while (1) {
-    struct js_event event;
-
     if (read(fileDescriptor, &event, sizeof(event)) != sizeof(event)) {
       perror("Error reading joystick");
       exit(EXIT_FAILURE);
@@ -126,28 +123,134 @@ int main()
     if (event.type == JS_EVENT_BUTTON) {
       printf("Button %u state: %u\n", event.number, event.value);
       buttonStates[event.number] = event.value;
-      if (buttonStates[RB_BUTTON] == 1) {
-        simulateKeyPress(display, "BackSpace");
-      } else if (isAnalogueTopLeft(axisValues)) {
 
-      } else if (isAnalogueTopRight(axisValues)) {
-      } else if (isAnalogueLeft(axisValues)) {
+      // Layer 6 Left Analogue Stick to the top left
+      //   ###        ###
+      //    P
+      //  Z   M
+      //    B
+      if (isAnalogueTopLeft(axisValues)) {
         switch (event.number) {
         case X_BUTTON:
-          simulateKeyPress(display, "a");
+          simulateKeyPress(display, "z");
           break;
         case A_BUTTON:
           simulateKeyPress(display, "b");
           break;
         case B_BUTTON:
-          simulateKeyPress(display, "c");
+          simulateKeyPress(display, "m");
+          break;
+        case Y_BUTTON:
+          simulateKeyPress(display, "p");
+          break;
+        }
+      } else if (isAnalogueTopRight(axisValues)) {
+      } else if (isAnalogueTop(axisValues)  && event.value == 1) {
+        // Layer 3 Left Analogue Stick to the top
+        //   ###        ###
+        //    Q
+        //  O   Y
+        //    S
+        switch (event.number) {
+        case X_BUTTON:
+          simulateKeyPress(display, "o");
+          break;
+        case A_BUTTON:
+          simulateKeyPress(display, "s");
+          break;
+        case B_BUTTON:
+          simulateKeyPress(display, "y");
+          break;
+        case Y_BUTTON:
+          simulateKeyPress(display, "q");
+          break;
+        }
+
+        // Layer 5 Left Analogue Stick to the bottom
+        //   ###        ###
+        //    F
+        //  V   X
+        //    G
+      } else if (isAnalogueBottom(axisValues)  && event.value == 1) {
+        switch (event.number) {
+        case X_BUTTON:
+          simulateKeyPress(display, "v");
+          break;
+        case A_BUTTON:
+          simulateKeyPress(display, "g");
+          break;
+        case B_BUTTON:
+         simulateKeyPress(display, "x");
+         break;
+        case Y_BUTTON:
+          simulateKeyPress(display, "f");
+          break;
+        }
+      } else if (isAnalogueLeft(axisValues) && event.value == 1) {
+        // Layer 2 Left Analogue Stick to the left
+        //   ###        3x <--
+        //    D
+        //  R   T
+        //    N
+        switch (event.number) {
+        case RB_BUTTON:
+          simulateKeyPress(display, "BackSpace");
+          simulateKeyPress(display, "BackSpace");
+          simulateKeyPress(display, "BackSpace");
+          break;
+        case X_BUTTON:
+          simulateKeyPress(display, "r");
+          break;
+        case A_BUTTON:
+          simulateKeyPress(display, "n");
+          break;
+        case B_BUTTON:
+          simulateKeyPress(display, "t");
+          break;
+        case Y_BUTTON:
+          simulateKeyPress(display, "d");
           break;
         }
 
         cout << "Left analog stick pushed to the left" << endl;
-      } else if (isAnalogueRight(axisValues)) {
+      } else if (isAnalogueRight(axisValues) && event.value == 1) {
+      // Layer 4 Left Analogue Stick to the right
+      //   ###        ###
+      //    H
+      //  W   L
+      //    C
+        switch (event.number) {
+        case X_BUTTON:
+          simulateKeyPress(display, "w");
+          break;
+        case A_BUTTON:
+          simulateKeyPress(display, "c");
+          break;
+        case B_BUTTON:
+          simulateKeyPress(display, "l");
+          break;
+        case Y_BUTTON:
+          simulateKeyPress(display, "h");
+          break;
+        }
 
+      // Layer 1
+      //   ###        <--
+      //    I
+      //  U   A
+      //    E
+      } else if (buttonStates[X_BUTTON] == 1) {
+        simulateKeyPress(display, "u");
+      } else if (buttonStates[A_BUTTON] == 1) {
+      simulateKeyPress(display, "e");
+      } else if (buttonStates[B_BUTTON] == 1) {
+        simulateKeyPress(display, "a");
+      } else if (buttonStates[Y_BUTTON] == 1) {
+        simulateKeyPress(display, "i");
+      } else if (buttonStates[RB_BUTTON] == 1) {
+        simulateKeyPress(display, "BackSpace");
       }
+
     } else if (event.type == JS_EVENT_AXIS) {
       printf("Axis %u value: %d\n", event.number, event.value);
       axisValues[event.number] = event.value;
