@@ -33,6 +33,14 @@ const int RZ_AXIS = 5;
 const int MAX_AXIS = 5;
 const int GAMEPAD_REGISTER_ZONE = 20000;
 
+void showNotification(const char* message) {
+  notify_init("Opensteno");
+  NotifyNotification* notification = notify_notification_new("Opensteno", message, NULL);
+  notify_notification_show(notification, NULL);
+  // Free the memory used by the notification object
+  g_object_unref(G_OBJECT(notification));
+}
+
 void simulateKeyPress(Display* display, const char* character)
 {
   KeyCode key = XKeysymToKeycode(display, XStringToKeysym(character));
@@ -43,14 +51,6 @@ void simulateKeyPress(Display* display, const char* character)
   XFlush(display);
 }
 
-void showNotification(const char* message) {
-  notify_init("Opensteno");
-  NotifyNotification* notification = notify_notification_new("Opensteno", message, NULL);
-  notify_notification_show(notification, NULL);
-  // Free the memory used by the notification object
-  g_object_unref(G_OBJECT(notification));
-}
-
 int getFileDescriptor(){
   int fileDescriptor = open("/dev/input/js0", O_RDONLY);
   if (fileDescriptor < 0) {
@@ -59,6 +59,38 @@ int getFileDescriptor(){
   }
 
   return fileDescriptor;
+}
+
+bool isAnalogueLeft(int axisValues[]) {
+  return axisValues[X_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isAnalogueRight(int axisValues[]) {
+  return axisValues[X_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isAnalogueTop(int axisValues[]) {
+  return axisValues[Y_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isAnalogueBottom(int axisValues[]) {
+  return axisValues[Y_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isAnalogueTopLeft(int axisValues[]) {
+  return isAnalogueLeft(axisValues) && isAnalogueTop(axisValues);
+}
+
+bool isAnalogueTopRight(int axisValues[]) {
+  return isAnalogueRight(axisValues) && isAnalogueTop(axisValues);
+}
+
+bool isAnalogueBottomLeft(int axisValues[]) {
+  return isAnalogueLeft(axisValues) && isAnalogueBottom(axisValues);
+}
+
+bool isAnalogueBottomRight(int axisValues[]) {
+  return isAnalogueRight(axisValues) && isAnalogueBottom(axisValues);
 }
 
 int main()
@@ -94,7 +126,12 @@ int main()
     if (event.type == JS_EVENT_BUTTON) {
       printf("Button %u state: %u\n", event.number, event.value);
       buttonStates[event.number] = event.value;
-      if (axisValues[X_AXIS] < -GAMEPAD_REGISTER_ZONE) {
+      if (buttonStates[RB_BUTTON] == 1) {
+        simulateKeyPress(display, "BackSpace");
+      } else if (isAnalogueTopLeft(axisValues)) {
+
+      } else if (isAnalogueTopRight(axisValues)) {
+      } else if (isAnalogueLeft(axisValues)) {
         switch (event.number) {
         case X_BUTTON:
           simulateKeyPress(display, "a");
@@ -108,14 +145,12 @@ int main()
         }
 
         cout << "Left analog stick pushed to the left" << endl;
+      } else if (isAnalogueRight(axisValues)) {
+
       }
     } else if (event.type == JS_EVENT_AXIS) {
       printf("Axis %u value: %d\n", event.number, event.value);
       axisValues[event.number] = event.value;
-    }
-
-    if (axisValues[X_AXIS] > GAMEPAD_REGISTER_ZONE) {
-      cout << "Left analog stick pushed to the right" << endl;
     }
 
     if (axisValues[Y_AXIS] < -GAMEPAD_REGISTER_ZONE) {
