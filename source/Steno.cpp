@@ -60,6 +60,7 @@ int getFileDescriptor(){
   return fileDescriptor;
 }
 
+// Left Analogue Stick
 bool isAnalogueLeft(int axisValues[]) {
   return axisValues[X_AXIS] < -GAMEPAD_REGISTER_ZONE;
 }
@@ -92,6 +93,24 @@ bool isAnalogueBottomRight(int axisValues[]) {
   return isAnalogueRight(axisValues) && isAnalogueBottom(axisValues);
 }
 
+// Right Analogue Stick
+bool isRightAnalogueLeft(int axisValues[]) {
+  return axisValues[RX_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isRightAnalogueRight(int axisValues[]) {
+  return axisValues[RX_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isRightAnalogueTop(int axisValues[]) {
+  return axisValues[RY_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isRightAnalogueBottom(int axisValues[]) {
+  return axisValues[RY_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+
 int main()
 {
   showNotification("Listening for gamepad input");
@@ -113,6 +132,9 @@ int main()
   memset(axisValues, 0, sizeof(axisValues));
   cout << "Reading Gamepad" << endl;
   struct js_event event;
+  bool spaceActive = false;
+  bool enterActive = false;
+
   while (1) {
     if (read(fileDescriptor, &event, sizeof(event)) != sizeof(event)) {
       perror("Error reading joystick");
@@ -236,8 +258,8 @@ int main()
 
       // Layer 1
       //   ###        <--
-      //    I
-      //  U   A
+      //    I           SPC
+      //  U   A      SHT   RTN
       //    E
       } else if (buttonStates[X_BUTTON] == 1) {
         simulateKeyPress(display, "u");
@@ -252,15 +274,38 @@ int main()
       }
 
     } else if (event.type == JS_EVENT_AXIS) {
+
+
       printf("Axis %u value: %d\n", event.number, event.value);
       axisValues[event.number] = event.value;
     }
 
-    if (axisValues[Y_AXIS] < -GAMEPAD_REGISTER_ZONE) {
-      cout << "Left analog stick pushed to the top" << endl;
+    //     SPC
+    //  SHI   RTN
+
+    if (axisValues[RY_AXIS] < -GAMEPAD_REGISTER_ZONE) {
+      if (!spaceActive){
+        simulateKeyPress(display, "U0020"); //space
+      }
+      spaceActive = true;
     }
 
-    if (axisValues[Y_AXIS] > GAMEPAD_REGISTER_ZONE) {
+    if (axisValues[RY_AXIS] <= 5000 && axisValues[RY_AXIS] >= -5000) {
+      spaceActive = false;
+    }
+
+    if (axisValues[RX_AXIS] > GAMEPAD_REGISTER_ZONE) {
+      if (!enterActive){
+        simulateKeyPress(display, "Return");
+      }
+      enterActive = true;
+    }
+
+    if (axisValues[RX_AXIS] <= 5000 && axisValues[RX_AXIS] >= -5000) {
+      enterActive = false;
+    }
+
+    if (axisValues[RY_AXIS] > GAMEPAD_REGISTER_ZONE) {
       cout << "Left analog stick pushed to the bottom" << endl;
     }
   }
