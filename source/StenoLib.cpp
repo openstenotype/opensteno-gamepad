@@ -19,6 +19,7 @@ const int RY_AXIS = 4;
 const int RZ_AXIS = 5;
 const int MAX_AXIS = 5;
 const int GAMEPAD_REGISTER_ZONE = 20000;
+const char* UNICODE_SPACE = "U0020";
 
 // Left Analogue Stick
 bool isAnalogueLeft(int axisValues[]) {

@@ -127,7 +127,7 @@ int main()
 
     if (axisValues[RY_AXIS] < -GAMEPAD_REGISTER_ZONE) {
       if (!spaceActive){
-        simulateKeyPress(display, "U0020"); //space
+        simulateKeyPress(display, UNICODE_SPACE);
       }
       spaceActive = true;
     }
