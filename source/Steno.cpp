@@ -48,7 +48,7 @@ int getFileDescriptor(){
 
 int main()
 {
-  layerButtonMaps[1] = {{Y_BUTTON, "i"}, {X_BUTTON, "u"}, {A_BUTTON, "e"}, {B_BUTTON, "a"}};
+  layerButtonMaps[1] = {{Y_BUTTON, "i"}, {X_BUTTON, "u"}, {A_BUTTON, "e"}, {B_BUTTON, "a"}, {RB_BUTTON, "BackSpace"}};
   layerButtonMaps[2] = {{Y_BUTTON, "d"}, {X_BUTTON, "r"}, {A_BUTTON, "n"}, {B_BUTTON, "t"}};
   layerButtonMaps[3] = {{Y_BUTTON, "q"}, {X_BUTTON, "o"}, {A_BUTTON, "s"}, {B_BUTTON, "y"}};
   layerButtonMaps[4] = {{Y_BUTTON, "h"}, {X_BUTTON, "w"}, {A_BUTTON, "c"}, {B_BUTTON, "l"}};
@@ -110,8 +110,6 @@ int main()
         }
       } else if (isAnalogueRight(axisValues) && event.value == 1) {
         simulateKeyPress(display, layerButtonMaps[4].at(event.number));
-      } else if (buttonStates[RB_BUTTON] == 1) {
-        simulateKeyPress(display, "BackSpace");
       }  else if (event.value == 1) {
         simulateKeyPress(display, layerButtonMaps[1].at(event.number));
       }
