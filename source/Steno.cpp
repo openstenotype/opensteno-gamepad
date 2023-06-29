@@ -91,12 +91,18 @@ int main()
       buttonStates[event.number] = event.value;
 
       if (isAnalogueTopLeft(axisValues)) {
-        simulateKeyPress(display, layerButtonMaps[6].at(event.number));
+        if (layerButtonMaps[6].count(event.number) != 0) {
+          simulateKeyPress(display, layerButtonMaps[6].at(event.number));
+        }
       } else if (isAnalogueTopRight(axisValues)) {
       } else if (isAnalogueTop(axisValues)  && event.value == 1) {
-        simulateKeyPress(display, layerButtonMaps[3].at(event.number));
+        if (layerButtonMaps[3].count(event.number) != 0) {
+          simulateKeyPress(display, layerButtonMaps[3].at(event.number));
+        }
       } else if (isAnalogueBottom(axisValues)  && event.value == 1) {
-        simulateKeyPress(display, layerButtonMaps[5].at(event.number));
+        if (layerButtonMaps[5].count(event.number) != 0) {
+          simulateKeyPress(display, layerButtonMaps[5].at(event.number));
+        }
       } else if (isAnalogueLeft(axisValues) && event.value == 1) {
         switch (event.number) {
         case RB_BUTTON:
@@ -105,13 +111,19 @@ int main()
           simulateKeyPress(display, "BackSpace");
           break;
         default:
-          simulateKeyPress(display, layerButtonMaps[2].at(event.number));
+          if (layerButtonMaps[2].count(event.number) != 0) {
+            simulateKeyPress(display, layerButtonMaps[2].at(event.number));
+          }
           break;
         }
       } else if (isAnalogueRight(axisValues) && event.value == 1) {
-        simulateKeyPress(display, layerButtonMaps[4].at(event.number));
+        if (layerButtonMaps[4].count(event.number) != 0) {
+          simulateKeyPress(display, layerButtonMaps[4].at(event.number));
+        }
       }  else if (event.value == 1) {
-        simulateKeyPress(display, layerButtonMaps[1].at(event.number));
+        if (layerButtonMaps[1].count(event.number) != 0) {
+          simulateKeyPress(display, layerButtonMaps[1].at(event.number));
+        }
       }
     } else if (event.type == JS_EVENT_AXIS) {
 
