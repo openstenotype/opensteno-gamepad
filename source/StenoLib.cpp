@@ -1,3 +1,6 @@
+#include <string>
+using namespace std;
+
 const int A_BUTTON = 0;
 const int B_BUTTON = 1;
 const int X_BUTTON = 2;
@@ -66,3 +69,36 @@ bool isRightAnalogueTop(int axisValues[]) {
 bool isRightAnalogueBottom(int axisValues[]) {
   return axisValues[RY_AXIS] > GAMEPAD_REGISTER_ZONE;
 }
+
+
+string help = "Layer 1\t\tLayer 2 ⬅️\t\tLayer 3 ⬆️\t\tLayer 4 ➡️\t\tLayer 5 ⬇️\t\tLayer 6 ↖️\n";
+
+const char* getHelp(std::map<int, std::map<int, const char*>> layerButtonMaps){
+  // Y Button
+  help += "\t";
+  for (int i = 1; i <= 6; i++) {
+    help += layerButtonMaps[i].at(Y_BUTTON);
+    help += "\t\t\t";
+  }
+  help += "\n";
+
+  // X & B Button
+  help += "\n";
+  for (int i = 1; i <= 6; i++) {
+    help += layerButtonMaps[i].at(X_BUTTON);
+    help += "\t\t";
+    help += layerButtonMaps[i].at(B_BUTTON);
+    help += "\t";
+  }
+  help += "\n\n";
+
+  // A Button
+  help += "\t";
+  for (int i = 1; i <= 6; i++) {
+    help += layerButtonMaps[i].at(A_BUTTON);
+    help += "\t\t\t";
+  }
+  help += "\n";
+  return help.c_str();
+}
+
