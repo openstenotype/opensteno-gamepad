@@ -17,7 +17,9 @@ const int Z_AXIS = 2;
 const int RX_AXIS = 3;
 const int RY_AXIS = 4;
 const int RZ_AXIS = 5;
-const int MAX_AXIS = 5;
+const int MAX_AXIS = 7;
+const int D_PAD_X_AXIS = 6;
+const int D_PAD_Y_AXIS = 7;
 const int GAMEPAD_REGISTER_ZONE = 20000;
 const char* UNICODE_SPACE = "U0020";
 
@@ -71,32 +73,55 @@ bool isRightAnalogueBottom(int axisValues[]) {
   return axisValues[RY_AXIS] > GAMEPAD_REGISTER_ZONE;
 }
 
-
-string help = "Layer 1\t\tLayer 2 ⬅️\t\tLayer 3 ⬆️\t\tLayer 4 ➡️\t\tLayer 5 ⬇️\t\tLayer 6 ↖️\n";
+string help = "Layer 1\t\t"
+  "Layer 2 ⬅️\t\t"
+  "Layer 3 ⬆️\t\t"
+  "Layer 4 ➡️\t\t"
+  "Layer 5 ⬇️\t\t"
+  "Layer 6 ↖️\t\t"
+  "Layer 7 ↗️️\t\t"
+  "Layer 8 ️↘️\t\t"
+  "Layer 9 ↙️️\n";
 
 const char* getHelp(std::map<int, std::map<int, const char*>> layerButtonMaps){
   // Y Button
   help += "\t";
-  for (int i = 1; i <= 6; i++) {
-    help += layerButtonMaps[i].at(Y_BUTTON);
+  for (int i = 1; i <= layerButtonMaps.size(); i++) {
+    if (layerButtonMaps[i].count(Y_BUTTON) != 0) {
+      help += layerButtonMaps[i].at(Y_BUTTON);
+    } else {
+      help += "#";
+    }
     help += "\t\t\t";
   }
   help += "\n";
 
   // X & B Button
   help += "\n";
-  for (int i = 1; i <= 6; i++) {
-    help += layerButtonMaps[i].at(X_BUTTON);
+  for (int i = 1; i <= layerButtonMaps.size(); i++) {
+    if (layerButtonMaps[i].count(X_BUTTON) != 0) {
+      help += layerButtonMaps[i].at(X_BUTTON);
+    } else {
+      help += "#";
+    }
     help += "\t\t";
-    help += layerButtonMaps[i].at(B_BUTTON);
+    if (layerButtonMaps[i].count(B_BUTTON) != 0) {
+      help += layerButtonMaps[i].at(B_BUTTON);
+    } else {
+      help += "#";
+    }
     help += "\t";
   }
   help += "\n\n";
 
   // A Button
   help += "\t";
-  for (int i = 1; i <= 6; i++) {
-    help += layerButtonMaps[i].at(A_BUTTON);
+  for (int i = 1; i <= layerButtonMaps.size(); i++) {
+    if (layerButtonMaps[i].count(A_BUTTON) != 0) {
+      help += layerButtonMaps[i].at(A_BUTTON);
+    } else {
+      help += "#";
+    }
     help += "\t\t\t";
   }
   help += "\n";

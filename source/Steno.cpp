@@ -16,6 +16,8 @@
 using namespace std;
 
 std::map<int, std::map<int, const char*>> layerButtonMaps;
+//std::map<int, std::function<bool(int, int)>> layerConditionsMap;
+State currentState;
 
 void showNotification(const char* message) {
   notify_init("Opensteno");
@@ -48,13 +50,22 @@ int getFileDescriptor(){
 
 int main()
 {
-  layerButtonMaps[1] = {{Y_BUTTON, "i"}, {X_BUTTON, "u"}, {A_BUTTON, "e"}, {B_BUTTON, "a"}, {RB_BUTTON, "BackSpace"}};
-  layerButtonMaps[2] = {{Y_BUTTON, "d"}, {X_BUTTON, "r"}, {A_BUTTON, "n"}, {B_BUTTON, "t"}};
-  layerButtonMaps[3] = {{Y_BUTTON, "q"}, {X_BUTTON, "o"}, {A_BUTTON, "s"}, {B_BUTTON, "y"}};
-  layerButtonMaps[4] = {{Y_BUTTON, "h"}, {X_BUTTON, "w"}, {A_BUTTON, "c"}, {B_BUTTON, "l"}};
-  layerButtonMaps[5] = {{Y_BUTTON, "f"}, {X_BUTTON, "v"}, {A_BUTTON, "g"}, {B_BUTTON, "x"}};
-  layerButtonMaps[6] = {{Y_BUTTON, "p"}, {X_BUTTON, "z"}, {A_BUTTON, "b"}, {B_BUTTON, "m"}};
+  layerButtonMaps[1]  = {{Y_BUTTON, "i"}, {X_BUTTON, "u"}, {A_BUTTON, "e"}, {B_BUTTON, "a"}, {RB_BUTTON, "BackSpace"}};
+  layerButtonMaps[2]  = {{Y_BUTTON, "d"}, {X_BUTTON, "r"}, {A_BUTTON, "n"}, {B_BUTTON, "t"}};
+  layerButtonMaps[3]  = {{Y_BUTTON, "q"}, {X_BUTTON, "o"}, {A_BUTTON, "s"}, {B_BUTTON, "y"}};
+  layerButtonMaps[4]  = {{Y_BUTTON, "h"}, {X_BUTTON, "w"}, {A_BUTTON, "c"}, {B_BUTTON, "l"}};
+  layerButtonMaps[5]  = {{Y_BUTTON, "f"}, {X_BUTTON, "v"}, {A_BUTTON, "g"}, {B_BUTTON, "x"}};
+  layerButtonMaps[6]  = {{Y_BUTTON, "p"}, {X_BUTTON, "z"}, {A_BUTTON, "b"}, {B_BUTTON, "m"}};
+  layerButtonMaps[7]  = {{Y_BUTTON, "?"}, {X_BUTTON, "."}, {A_BUTTON, "j"}, {B_BUTTON, "k"}};
+  layerButtonMaps[8]  = {{Y_BUTTON, "="}, {X_BUTTON, "!"}, {A_BUTTON, "+"}, {B_BUTTON, "-"}};
+  layerButtonMaps[9]  = {{Y_BUTTON, ">"}, {X_BUTTON, "<"}, {A_BUTTON, "("}, {B_BUTTON, ")"}};
+  layerButtonMaps[10] = {{Y_BUTTON, "&"}, {X_BUTTON, "\""}, {A_BUTTON, "{"}, {B_BUTTON, "}"}};
+  layerButtonMaps[11] = {{Y_BUTTON, "#"}, {X_BUTTON, "|"}, {A_BUTTON, "@"}, {B_BUTTON, "'"}};
+  layerButtonMaps[12] = {{Y_BUTTON, "ß"}, {X_BUTTON, "ü"}, {A_BUTTON, "ä"}, {B_BUTTON, "ö"}};
+  layerButtonMaps[13] = {{Y_BUTTON, "3"}, {X_BUTTON, "4"}, {A_BUTTON, "1"}, {B_BUTTON, "2"}, {RB_BUTTON, "5"}};
+  layerButtonMaps[14] = {{Y_BUTTON, "9"}, {X_BUTTON, "8"}, {A_BUTTON, "6"}, {B_BUTTON, "7"}, {RB_BUTTON, "0"}};
 
+  currentState = State::READY;
   showNotification("Listening for gamepad input");
 
   showNotification(getHelp(layerButtonMaps));
