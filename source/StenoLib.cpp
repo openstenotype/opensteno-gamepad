@@ -56,6 +56,40 @@ bool isAnalogueBottomRight(int axisValues[]) {
   return isAnalogueRight(axisValues) && isAnalogueBottom(axisValues);
 }
 
+//D-Pad
+// Left Analogue Stick
+bool isPadLeft(int axisValues[]) {
+  return axisValues[D_PAD_X_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isPadRight(int axisValues[]) {
+  return axisValues[D_PAD_X_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isPadTop(int axisValues[]) {
+  return axisValues[D_PAD_Y_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isPadBottom(int axisValues[]) {
+  return axisValues[D_PAD_Y_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isPadTopLeft(int axisValues[]) {
+  return isPadLeft(axisValues) && isPadTop(axisValues);
+}
+
+bool isPadTopRight(int axisValues[]) {
+  return isPadRight(axisValues) && isPadTop(axisValues);
+}
+
+bool isPadBottomLeft(int axisValues[]) {
+  return isPadLeft(axisValues) && isPadBottom(axisValues);
+}
+
+bool isPadBottomRight(int axisValues[]) {
+  return isPadRight(axisValues) && isPadBottom(axisValues);
+}
+
 // Right Analogue Stick
 bool isRightAnalogueLeft(int axisValues[]) {
   return axisValues[RX_AXIS] < -GAMEPAD_REGISTER_ZONE;
