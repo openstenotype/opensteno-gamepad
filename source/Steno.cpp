@@ -14,26 +14,21 @@
 #include "StenoLib.cpp"
 #include <X11/Xutil.h>
 #include <locale.h>
-#include <xcb/xcb.h>
-#include <xcb/xproto.h>
-#include <xcb/xcb_keysyms.h>
+#include <cstdlib>
 
 using namespace std;
 
-struct ButtonConfiguration {
-  string description;
+struct ButtonKeyEvent {
   unsigned long int keySymbol; // constants from /usr/include/X11/keysymdef.h
   unsigned int keyMask; // constants from /usr/include/X11/X.h None as default
 };
 
-//map<int, map<int, const char32_t*>> layerButtonMaps;
-//map<int, map<int, const string>> layerButtonMaps;
-map<int, map<int, ButtonConfiguration>> layerButtonMaps;
-//map<int, map<int, const const*>> layerButtonMaps;
-//map<int, LayerSetting> layerConfiguration;
+struct ButtonConfiguration {
+  string description;
+  ButtonKeyEvent keyEvents[5];
+};
 
-//wchar_t character;
-//std::map<int, std::function<bool(int, int)>> layerConditionsMap;
+map<int, map<int, ButtonConfiguration>> layerButtonMaps;
 
 void showNotification(const char* message) {
   notify_init("Opensteno");
@@ -44,7 +39,7 @@ void showNotification(const char* message) {
   g_object_unref(G_OBJECT(notification));
 }
 
-void simulateKeyPress(Display* display, ButtonConfiguration button) {
+void simulateKeyPress(Display* display, ButtonKeyEvent buttonKeyEvent) {
   XEvent event;
   XKeyEvent keyEvent;
   Window focusedWindow;
@@ -54,9 +49,9 @@ void simulateKeyPress(Display* display, ButtonConfiguration button) {
   event.xkey.type = KeyPress;
   event.xkey.window = focusedWindow;
   event.xkey.display = display;
-  event.xkey.state = button.keyMask;
+  event.xkey.state = buttonKeyEvent.keyMask;
   KeyCode keycode;
-  keycode = XKeysymToKeycode(display, button.keySymbol);
+  keycode = XKeysymToKeycode(display, buttonKeyEvent.keySymbol);
   event.xkey.keycode = keycode;
 
   keyEvent = event.xkey;
@@ -78,62 +73,296 @@ int getFileDescriptor(){
 
 int main()
 {
+
+  // layerButtonMaps[1][Y_BUTTON].description = "i";
+  // layerButtonMaps[1][Y_BUTTON].keyEvents[0].keySymbol = XK_i;
+  // layerButtonMaps[1][Y_BUTTON].keyEvents[0].keyMask = None;
+
   layerButtonMaps =
     {
-      {1, {{Y_BUTTON, {"i", XK_i}},
-           {X_BUTTON, {"u", XK_u, None}},
-           {A_BUTTON, {"e", XK_e, None}},
-           {B_BUTTON, {"a", XK_a, None}},
-           {RB_BUTTON, {"BackSpace", XK_BackSpace, None}}
+      {1, {
+          {
+            Y_BUTTON,
+            {"i", {XK_i, None}}
+          },
+          {
+            X_BUTTON,
+            {"u", {XK_u, None}}
+          },
+          {
+            A_BUTTON,
+            {"e", {XK_e, None}}
+          },
+          {
+            B_BUTTON,
+            {"a", {XK_a, None}}
+          },
+          {
+            RB_BUTTON,
+            {"BackSpace", {XK_BackSpace, None}}
+          }
         }
       },
-      {11, {{Y_BUTTON,  {"#", XK_numbersign, Mod5Mask}},
-            {X_BUTTON,  {"|", XK_bar, Mod5Mask}},
-            {A_BUTTON,  {"@", XK_at, Mod5Mask}},
-            {B_BUTTON,  {"'", XK_quoteleft, Mod5Mask}}
+      {2, {
+          {
+            Y_BUTTON,
+            {"d", {XK_d, None}}
+          },
+          {
+            X_BUTTON,
+            {"r", {XK_r, None}}
+          },
+          {
+            A_BUTTON,
+            {"n", {XK_n, None}}
+          },
+          {
+            B_BUTTON,
+            {"t", {XK_t, None}}
+          },
+          {
+            RB_BUTTON,
+            {"BackSpace", {{XK_BackSpace, None}, {XK_BackSpace, None}, {XK_BackSpace, None}}}
+          }
         }
       },
-      {12, {{Y_BUTTON, {"ß", XK_ssharp, None}},
-            {X_BUTTON, {"ü", XK_udiaeresis, None}},
-            {A_BUTTON, {"ä", XK_adiaeresis, None}},
-            {B_BUTTON, {"ö", XK_odiaeresis, None}},
-            {RB_BUTTON, {"BackSpace", XK_BackSpace, None}}
+      {3, {
+          {
+            Y_BUTTON,
+            {"q", {XK_q, None}}
+          },
+          {
+            X_BUTTON,
+            {"o", {XK_o, None}}
+          },
+          {
+            A_BUTTON,
+            {"s", {XK_s, None}}
+          },
+          {
+            B_BUTTON,
+            {"y", {XK_y, None}}
+          }
+        }
+      },
+      {4, {
+          {
+            Y_BUTTON,
+            {"h", {XK_h, None}}
+          },
+          {
+            X_BUTTON,
+            {"w", {XK_w, None}}
+          },
+          {
+            A_BUTTON,
+            {"c", {XK_c, None}}
+          },
+          {
+            B_BUTTON,
+            {"l", {XK_l, None}}
+          }
+        }
+      },
+      {5, {
+          {
+            Y_BUTTON,
+            {"f", {XK_f, None}}
+          },
+          {
+            X_BUTTON,
+            {"v", {XK_v, None}}
+          },
+          {
+            A_BUTTON,
+            {"g", {XK_g, None}}
+          },
+          {
+            B_BUTTON,
+            {"x", {XK_x, None}}
+          }
+        }
+      },
+      {6, {
+          {
+            Y_BUTTON,
+            {"p", {XK_p, None}}
+          },
+          {
+            X_BUTTON,
+            {"z", {XK_z, None}}
+          },
+          {
+            A_BUTTON,
+            {"b", {XK_b, None}}
+          },
+          {
+            B_BUTTON,
+            {"m", {XK_m, None}}
+          }
+        }
+      },
+      {7, {
+          {
+            Y_BUTTON,
+            {"?", {XK_question, Mod5Mask}}
+          },
+          {
+            X_BUTTON,
+            {".", {XK_period, None}}
+          },
+          {
+            A_BUTTON,
+            {"j", {XK_j, None}}
+          },
+          {
+            B_BUTTON,
+            {"k", {XK_k, None}}
+          }
+        }
+      },
+      {8, {
+          {
+            Y_BUTTON,
+            {"=", {XK_equal, Mod5Mask}}
+          },
+          {
+            X_BUTTON,
+            {"!", {XK_exclam, Mod5Mask}}
+          },
+          {
+            A_BUTTON,
+            {"+", {XK_plus, Mod5Mask}}
+          },
+          {
+            B_BUTTON,
+            {"-", {XK_minus, None}}
+          }
+        }
+      },
+      {9, {
+          {
+            Y_BUTTON,
+            {">", {XK_greater, Mod5Mask}}
+          },
+          {
+            X_BUTTON,
+            {"<", {XK_less, Mod5Mask}}
+          },
+          {
+            A_BUTTON,
+            {"(", {XK_parenleft, Mod5Mask}}
+          },
+          {
+            B_BUTTON,
+            {")", {XK_parenright, Mod5Mask}}
+          }
+        }
+      },
+      {10, {
+          {
+            Y_BUTTON,
+            {"&", {XK_ampersand, Mod5Mask}}
+          },
+          {
+           X_BUTTON,
+           {"\"", {XK_quotedbl, Mod5Mask}}
+          },
+          {
+            A_BUTTON,
+            {"{", {XK_braceleft, Mod5Mask}}
+          },
+          {
+            B_BUTTON,
+            {"}", {XK_braceright, Mod5Mask}}
+          }
+        }
+      },
+      {11, {
+          {
+            Y_BUTTON,
+            {"#", {XK_numbersign, Mod5Mask}}
+          },
+          {
+            X_BUTTON,
+            {"|", {XK_bar, Mod5Mask}}
+          },
+          {
+            A_BUTTON,
+            {"@", {XK_at, Mod5Mask}}
+          },
+          {
+            B_BUTTON,
+            {"'", {XK_quoteleft, Mod5Mask}}
+          }
+        }
+      },
+      {12, {
+          {
+            Y_BUTTON,
+            {"ß", {XK_ssharp, None}}
+          },
+          {
+            X_BUTTON,
+            {"ü", {XK_udiaeresis, None}}
+          },
+          {
+            A_BUTTON,
+            {"ä", {XK_adiaeresis, None}}
+          },
+          {
+            B_BUTTON,
+            {"ö", {XK_odiaeresis, None}}
+          }
+        }
+      },
+      {13, {
+          {
+            Y_BUTTON,
+            {"3", {XK_3, None}}
+          },
+          {
+            X_BUTTON,
+            {"4", {XK_4, None}}
+          },
+          {
+            A_BUTTON,
+            {"1", {XK_1, None}}
+          },
+          {
+            B_BUTTON,
+            {"2", {XK_2, None}}
+          },
+          {
+            RB_BUTTON,
+            {"5", {XK_5, None}}
+          }
+        }
+      },
+      {14, {
+          {
+            Y_BUTTON,
+            {"8", {XK_8, None}}
+          },
+          {
+            X_BUTTON,
+            {"9", {XK_9, None}}
+          },
+          {
+            A_BUTTON,
+            {"6", {XK_6, None}}
+          },
+          {
+            B_BUTTON,
+            {"7", {XK_7, None}}
+          },
+          {
+            RB_BUTTON,
+            {"0", {XK_0, None}}
+          }
         }
       }
   };
-  //   layerButtonMaps[11] = {{Y_BUTTON, {}},
-  //                          {X_BUTTON, {}},
-  //                          {A_BUTTON, {}},
-  //                          {B_BUTTON, {}}};
-
-
-  // layerButtonMaps[1]  = {{Y_BUTTON, {"i", XK_i}}, {X_BUTTON, {"u", XK_u}, {A_BUTTON, {"e", XK_e}}, {B_BUTTON, {"a", XK_a}}, {RB_BUTTON, {"BackSpace", XK_BackSpace}}};
-  //   layerButtonMaps[2]  = {{Y_BUTTON, {"d", XK_d}}, {X_BUTTON, {"r", XK_r}}, {A_BUTTON, {"n", XK_n}}, {B_BUTTON, {"t", XK_t}}};
-  //   layerButtonMaps[3]  = {{Y_BUTTON, {"q", XK_q}}, {X_BUTTON, {"o", XK_o}}, {A_BUTTON, {"s", XK_s}}, {B_BUTTON, {"y", XK_y}}};
-  //   layerButtonMaps[4]  = {{Y_BUTTON, {"h", XK_h}}, {X_BUTTON, {"w", XK_w}}, {A_BUTTON, {"c", XK_c}}, {B_BUTTON, {"l", XK_l}}};
-  //   layerButtonMaps[5]  = {{Y_BUTTON, {"f", XK_f}}, {X_BUTTON, {"v", XK_v}}, {A_BUTTON, {"g", XK_g}}, {B_BUTTON, {"x", XK_x}}};
-  //   layerButtonMaps[6]  = {{Y_BUTTON, {"p", XK_p}}, {X_BUTTON, {"z", XK_z}}, {A_BUTTON, {"b", XK_b}}, {B_BUTTON, {"m", XK_m}}};
-  //   layerButtonMaps[7]  = {{Y_BUTTON, {"?", XK_question}},
-  //                          {X_BUTTON, {".", XK_period}},
-  //                          {A_BUTTON, {"j", XK_j}},
-  //                          {B_BUTTON, {"k", XK_k}}};
-  //   layerButtonMaps[8]  = {{Y_BUTTON, {"=", XK_equal}},
-  //                          {X_BUTTON, {"!", XK_exclam}}, {A_BUTTON, {"+", XK_plus}}, {B_BUTTON, {"-", XK_minus}}};
-  //   layerButtonMaps[9]  = {{Y_BUTTON, {">", XK_greater}}, {X_BUTTON, {"<", XK_less}}, {A_BUTTON, {"(", XK_parenleft}}, {B_BUTTON, {")", XK_parenright}}};
-  //   layerButtonMaps[10] = {{Y_BUTTON, {"&", XK_ampersand}},
-  //                          {X_BUTTON, {"\"", XK_quotedbl}},
-  //                          {A_BUTTON, {"{", XK_braceleft}},
-  //                          {B_BUTTON, {"}", XK_braceright}}};
-  //   layerButtonMaps[11] = {{Y_BUTTON, {"#", XK_numbersign}},
-  //                          {X_BUTTON, {"|", XK_bar}},
-  //                          {A_BUTTON, {"@", XK_at}},
-  //                          {B_BUTTON, {"'", XK_quoteleft}}};
-  //   layerButtonMaps[12] = {{Y_BUTTON, {"ß", XK_ssharp}},
-  //                          {X_BUTTON, {"ü", XK_udiaeresis}},
-  //                          {A_BUTTON, {"ä", XK_adiaeresis}},
-  //                          {B_BUTTON, {"ö", XK_odiaeresis}}};
-  //   layerButtonMaps[13] = {{Y_BUTTON, {"3", XK_3}}, {X_BUTTON, {"4", XK_4}}, {A_BUTTON, {"1", XK_1}}, {B_BUTTON, {"2", XK_2}}, {RB_BUTTON, {"5", XK_5}}};
-  //   layerButtonMaps[14] = {{Y_BUTTON, {"8", XK_8}}, {X_BUTTON, {"9", XK_9}}, {A_BUTTON, {"6", XK_6}}, {B_BUTTON, {"7", XK_7}}, {RB_BUTTON, {"0", XK_0}}};
 
   showNotification("Listening for gamepad input");
 
@@ -154,8 +383,10 @@ int main()
   //unsigned char buttonStates[numButtons]={0};
   //int axisValues[numAxes];
 
-  unsigned char buttonStates[20]={0};
+  //  unsigned char buttonStates[20]={0};
+  unsigned char buttonStates[20];
   int axisValues[20];
+  memset(buttonStates, 0, sizeof(buttonStates));
   memset(axisValues, 0, sizeof(axisValues));
   cout << "Reading Gamepad" << endl;
   struct js_event event;
@@ -175,65 +406,81 @@ int main()
 
       if (isAnalogueTopLeft(axisValues)) {
         if (layerButtonMaps[6].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[6].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[6].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isAnalogueTopRight(axisValues)) {
         if (layerButtonMaps[7].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[7].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[7].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isAnalogueBottomLeft(axisValues)) {
       } else if (isAnalogueBottomRight(axisValues)) {
       } else if (isAnalogueTop(axisValues)  && event.value == 1) {
         if (layerButtonMaps[3].count(event.number) != 0) {
-          // simulateKeyPress(display, layerButtonMaps[3].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[3].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isAnalogueBottom(axisValues)  && event.value == 1) {
         if (layerButtonMaps[5].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[5].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[5].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
+
         }
       } else if (isAnalogueLeft(axisValues) && event.value == 1) {
-        switch (event.number) {
-        case RB_BUTTON:
-          //simulateKeyPress(display, "BackSpace");
-          //simulateKeyPress(display, "BackSpace");
-          //simulateKeyPress(display, "BackSpace");
-          break;
-        default:
-          if (layerButtonMaps[2].count(event.number) != 0) {
-            //simulateKeyPress(display, layerButtonMaps[2].at(event.number));
+        if (layerButtonMaps[2].count(event.number) != 0) {
+          for(ButtonKeyEvent &event : layerButtonMaps[2].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
           }
-          break;
         }
       } else if (isAnalogueRight(axisValues) && event.value == 1) {
         if (layerButtonMaps[4].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[4].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[4].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isPadTopLeft(axisValues) && event.value == 1) {
         if (layerButtonMaps[14].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[14].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[14].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isPadTopRight(axisValues) && event.value == 1) {
       } else if (isPadBottomRight(axisValues) && event.value == 1) {
       } else if (isPadBottomLeft(axisValues) && event.value == 1) {
       } else if (isPadTop(axisValues) && event.value == 1) {
         if (layerButtonMaps[10].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[10].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[10].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isPadRight(axisValues) && event.value == 1) {
         if (layerButtonMaps[11].count(event.number) != 0) {
-          simulateKeyPress(display, layerButtonMaps[11].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[11].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isPadBottom(axisValues) && event.value == 1) {
         if (layerButtonMaps[12].count(event.number) != 0) {
-          simulateKeyPress(display, layerButtonMaps[12].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[12].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (isPadLeft(axisValues) && event.value == 1) {
         if (layerButtonMaps[13].count(event.number) != 0) {
-          //simulateKeyPress(display, layerButtonMaps[13].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[13].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       } else if (event.value == 1) {
         if (layerButtonMaps[1].count(event.number) != 0) {
-          simulateKeyPress(display, layerButtonMaps[1].at(event.number));
+          for(ButtonKeyEvent &event : layerButtonMaps[1].at(event.number).keyEvents){
+            simulateKeyPress(display, event);
+          }
         }
       }
     } else if (event.type == JS_EVENT_AXIS) {
