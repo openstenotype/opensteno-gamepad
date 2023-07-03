@@ -117,48 +117,49 @@ string help = "Layer 1\t\t"
   "Layer 8 ️↘️\t\t"
   "Layer 9 ↙️️\n";
 
-const char* getHelp(std::map<int, std::map<int, const char*>> layerButtonMaps){
-  // Y Button
-  help += "\t";
-  for (int i = 1; i <= layerButtonMaps.size(); i++) {
-    if (layerButtonMaps[i].count(Y_BUTTON) != 0) {
-      help += layerButtonMaps[i].at(Y_BUTTON);
-    } else {
-      help += "#";
-    }
-    help += "\t\t\t";
-  }
-  help += "\n";
+//const char* getHelp(std::map<int, std::map<int, ButtonConfiguration>> layerButtonMaps){
+  // // Y Button
+  // help += "\t";
+  // for (int i = 1; i <= layerButtonMaps.size(); i++) {
+  //   if (layerButtonMaps[i].count(Y_BUTTON) != 0) {
+  //     help += layerButtonMaps[i].at(Y_BUTTON).description;
+  //   } else {
+  //     help += "#";
+  //   }
+  //   help += "\t\t\t";
+  // }
+  // help += "\n";
 
-  // X & B Button
-  help += "\n";
-  for (int i = 1; i <= layerButtonMaps.size(); i++) {
-    if (layerButtonMaps[i].count(X_BUTTON) != 0) {
-      help += layerButtonMaps[i].at(X_BUTTON);
-    } else {
-      help += "#";
-    }
-    help += "\t\t";
-    if (layerButtonMaps[i].count(B_BUTTON) != 0) {
-      help += layerButtonMaps[i].at(B_BUTTON);
-    } else {
-      help += "#";
-    }
-    help += "\t";
-  }
-  help += "\n\n";
+  // // X & B Button
+  // help += "\n";
+  // for (int i = 1; i <= layerButtonMaps.size(); i++) {
+  //   if (layerButtonMaps[i].count(X_BUTTON) != 0) {
+  //     help += layerButtonMaps[i].at(X_BUTTON).description;
+  //   } else {
+  //     help += "#";
+  //   }
+  //   help += "\t\t";
+  //   if (layerButtonMaps[i].count(B_BUTTON) != 0) {
+  //     help += layerButtonMaps[i].at(B_BUTTON).description;
+  //   } else {
+  //     help += "#";
+  //   }
+  //   help += "\t";
+  // }
+  // help += "\n\n";
 
-  // A Button
-  help += "\t";
-  for (int i = 1; i <= layerButtonMaps.size(); i++) {
-    if (layerButtonMaps[i].count(A_BUTTON) != 0) {
-      help += layerButtonMaps[i].at(A_BUTTON);
-    } else {
-      help += "#";
-    }
-    help += "\t\t\t";
-  }
-  help += "\n";
-  return help.c_str();
-}
+  // // A Button
+  // help += "\t";
+  // for (int i = 1; i <= layerButtonMaps.size(); i++) {
+  //   if (layerButtonMaps[i].count(A_BUTTON) != 0) {
+  //     help += layerButtonMaps[i].at(A_BUTTON).description;
+  //   } else {
+  //     help += "#";
+  //   }
+  //   help += "\t\t\t";
+  // }
+  // help += "\n";
+  // return help.c_str();
+  //  return "test";
+  //}
 

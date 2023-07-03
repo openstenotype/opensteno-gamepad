@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(OpenSteno)
-
+set(CMAKE_BUILD_TYPE Debug)
 add_executable(${PROJECT_NAME} source/Steno.cpp)
 INCLUDE(FindPkgConfig)
 PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
