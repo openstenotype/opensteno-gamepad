@@ -15,6 +15,7 @@
 #include <X11/Xutil.h>
 #include <locale.h>
 #include <cstdlib>
+#include <algorithm>
 
 using namespace std;
 
@@ -62,7 +63,7 @@ void simulateKeyPress(Display* display, ButtonKeyEvent buttonKeyEvent) {
 }
 
 int getFileDescriptor(){
-  int fileDescriptor = open("/dev/input/js0", O_RDONLY);
+  int fileDescriptor = open("/dev/input/js1", O_RDONLY);
   if (fileDescriptor < 0) {
     cerr << "Could not open joystick: " << endl;
     exit(EXIT_FAILURE);
@@ -73,10 +74,6 @@ int getFileDescriptor(){
 
 int main()
 {
-
-  // layerButtonMaps[1][Y_BUTTON].description = "i";
-  // layerButtonMaps[1][Y_BUTTON].keyEvents[0].keySymbol = XK_i;
-  // layerButtonMaps[1][Y_BUTTON].keyEvents[0].keyMask = None;
 
   layerButtonMaps =
     {
@@ -403,86 +400,45 @@ int main()
     if (event.type == JS_EVENT_BUTTON) {
       cout << "Button " << event.number << " state: " << event.value << endl;
       buttonStates[event.number] = event.value;
+    }
 
-      if (isAnalogueTopLeft(axisValues)) {
-        if (layerButtonMaps[6].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[6].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (isAnalogueTopRight(axisValues)) {
-        if (layerButtonMaps[7].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[7].at(event.number).keyEvents){
-            cout << "Layer 7 triggered" << endl;
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
+    ButtonKeyEvent currentEvents[5];
+    if (event.type == JS_EVENT_BUTTON && event.value == 1) {
+      if (isAnalogueTopLeft(axisValues) && layerButtonMaps[6].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[6].at(event.number).keyEvents), end(layerButtonMaps[6].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isAnalogueTopRight(axisValues) && layerButtonMaps[7].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[7].at(event.number).keyEvents), end(layerButtonMaps[7].at(event.number).keyEvents), begin(currentEvents));
       } else if (isAnalogueBottomLeft(axisValues)) {
       } else if (isAnalogueBottomRight(axisValues)) {
-      } else if (isAnalogueTop(axisValues)  && event.value == 1) {
-        if (layerButtonMaps[3].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[3].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (isAnalogueBottom(axisValues)  && event.value == 1) {
-        if (layerButtonMaps[5].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[5].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-
-        }
-      } else if (isAnalogueLeft(axisValues) && event.value == 1) {
-        if (layerButtonMaps[2].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[2].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (isAnalogueRight(axisValues) && event.value == 1) {
-        if (layerButtonMaps[4].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[4].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (isPadTopLeft(axisValues) && event.value == 1) {
-        if (layerButtonMaps[14].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[14].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
+      } else if (isAnalogueTop(axisValues) && layerButtonMaps[3].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[3].at(event.number).keyEvents), end(layerButtonMaps[3].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isAnalogueBottom(axisValues) && layerButtonMaps[5].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[5].at(event.number).keyEvents), end(layerButtonMaps[5].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isAnalogueLeft(axisValues) && layerButtonMaps[2].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[2].at(event.number).keyEvents), end(layerButtonMaps[2].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isAnalogueRight(axisValues) && layerButtonMaps[4].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[4].at(event.number).keyEvents), end(layerButtonMaps[4].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isPadTopLeft(axisValues) && layerButtonMaps[14].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[14].at(event.number).keyEvents), end(layerButtonMaps[14].at(event.number).keyEvents), begin(currentEvents));
       } else if (isPadTopRight(axisValues) && event.value == 1) {
       } else if (isPadBottomRight(axisValues) && event.value == 1) {
       } else if (isPadBottomLeft(axisValues) && event.value == 1) {
-      } else if (isPadTop(axisValues) && event.value == 1) {
-        if (layerButtonMaps[10].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[10].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
+      } else if (isPadTop(axisValues) && layerButtonMaps[10].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[10].at(event.number).keyEvents), end(layerButtonMaps[10].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isPadRight(axisValues) && layerButtonMaps[11].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[11].at(event.number).keyEvents), end(layerButtonMaps[11].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isPadBottom(axisValues) && layerButtonMaps[12].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[12].at(event.number).keyEvents), end(layerButtonMaps[12].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isPadLeft(axisValues) && layerButtonMaps[13].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[13].at(event.number).keyEvents), end(layerButtonMaps[13].at(event.number).keyEvents), begin(currentEvents));
+      } else if (layerButtonMaps[1].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[1].at(event.number).keyEvents), end(layerButtonMaps[1].at(event.number).keyEvents), begin(currentEvents));
+      }
+      for(ButtonKeyEvent &buttonEvent : currentEvents){
+        if (buttonEvent.keySymbol == 0 && buttonEvent.keyMask == 0) {
+          continue;
         }
-      } else if (isPadRight(axisValues) && event.value == 1) {
-        if (layerButtonMaps[11].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[11].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (isPadBottom(axisValues) && event.value == 1) {
-        if (layerButtonMaps[12].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[12].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (isPadLeft(axisValues) && event.value == 1) {
-        if (layerButtonMaps[13].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[13].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
-      } else if (event.value == 1) {
-        if (layerButtonMaps[1].count(event.number) != 0) {
-          for(ButtonKeyEvent &buttonEvent : layerButtonMaps[1].at(event.number).keyEvents){
-            simulateKeyPress(display, buttonEvent);
-          }
-        }
+        simulateKeyPress(display, buttonEvent);
       }
     } else if (event.type == JS_EVENT_AXIS) {
 
