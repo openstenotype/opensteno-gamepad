@@ -619,7 +619,10 @@ int main()
 
     if (axisValues[RY_AXIS] < -GAMEPAD_REGISTER_ZONE) {
       if (!spaceActive){
-        //simulateKeyPress(display, UNICODE_SPACE);
+          ButtonKeyEvent spaceEvent;
+          spaceEvent.keySymbol = XK_space;
+          spaceEvent.keyMask   = None;
+        simulateKeyPress(display, spaceEvent);
       }
       spaceActive = true;
     }
@@ -630,7 +633,10 @@ int main()
 
     if (axisValues[RX_AXIS] > GAMEPAD_REGISTER_ZONE) {
       if (!enterActive){
-        //simulateKeyPress(display, "Return");
+        ButtonKeyEvent enterEvent;
+        enterEvent.keySymbol = XK_Return;
+        enterEvent.keyMask   = None;
+        simulateKeyPress(display, enterEvent);
       }
       enterActive = true;
     }
