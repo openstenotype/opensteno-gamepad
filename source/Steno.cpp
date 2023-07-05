@@ -63,7 +63,13 @@ void simulateKeyPress(Display* display, ButtonKeyEvent buttonKeyEvent) {
 }
 
 int getFileDescriptor(){
-  int fileDescriptor = open("/dev/input/js1", O_RDONLY);
+  const char* devicePath = "/dev/input/js0";
+
+  if (!(access(devicePath, F_OK) != -1)) {
+      devicePath = "/dev/input/js1";
+  }
+
+  int fileDescriptor = open(devicePath, O_RDONLY);
   if (fileDescriptor < 0) {
     cerr << "Could not open joystick: " << endl;
     exit(EXIT_FAILURE);
