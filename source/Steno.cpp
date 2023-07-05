@@ -364,6 +364,29 @@ int main()
             {"0", {XK_0, None}}
           }
         }
+      },
+      {21, {
+          {
+            Y_BUTTON,
+            {"I", {XK_I, ShiftMask}}
+          },
+          {
+            X_BUTTON,
+            {"U", {XK_U, ShiftMask}}
+          },
+          {
+            A_BUTTON,
+            {"E", {XK_E, ShiftMask}}
+          },
+          {
+            B_BUTTON,
+            {"A", {XK_A, ShiftMask}}
+          },
+          {
+            RB_BUTTON,
+            {"backspace", {XK_BackSpace, None}}
+          }
+        }
       }
   };
 
@@ -414,8 +437,10 @@ int main()
         copy(begin(layerButtonMaps[6].at(event.number).keyEvents), end(layerButtonMaps[6].at(event.number).keyEvents), begin(currentEvents));
       } else if (isAnalogueTopRight(axisValues) && layerButtonMaps[7].count(event.number) != 0) {
         copy(begin(layerButtonMaps[7].at(event.number).keyEvents), end(layerButtonMaps[7].at(event.number).keyEvents), begin(currentEvents));
-      } else if (isAnalogueBottomLeft(axisValues)) {
-      } else if (isAnalogueBottomRight(axisValues)) {
+      } else if (isAnalogueBottomLeft(axisValues) && layerButtonMaps[9].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[9].at(event.number).keyEvents), end(layerButtonMaps[9].at(event.number).keyEvents), begin(currentEvents));
+      } else if (isAnalogueBottomRight(axisValues) && layerButtonMaps[8].count(event.number) != 0) {
+        copy(begin(layerButtonMaps[8].at(event.number).keyEvents), end(layerButtonMaps[8].at(event.number).keyEvents), begin(currentEvents));
       } else if (isAnalogueTop(axisValues) && layerButtonMaps[3].count(event.number) != 0) {
         copy(begin(layerButtonMaps[3].at(event.number).keyEvents), end(layerButtonMaps[3].at(event.number).keyEvents), begin(currentEvents));
       } else if (isAnalogueBottom(axisValues) && layerButtonMaps[5].count(event.number) != 0) {
@@ -438,7 +463,12 @@ int main()
       } else if (isPadLeft(axisValues) && layerButtonMaps[13].count(event.number) != 0) {
         copy(begin(layerButtonMaps[13].at(event.number).keyEvents), end(layerButtonMaps[13].at(event.number).keyEvents), begin(currentEvents));
       } else if (layerButtonMaps[1].count(event.number) != 0) {
-        copy(begin(layerButtonMaps[1].at(event.number).keyEvents), end(layerButtonMaps[1].at(event.number).keyEvents), begin(currentEvents));
+        if (isLeftTriggerPulled(axisValues)) {
+          copy(begin(layerButtonMaps[21].at(event.number).keyEvents), end(layerButtonMaps[21].at(event.number).keyEvents), begin(currentEvents));
+        } else {
+          copy(begin(layerButtonMaps[1].at(event.number).keyEvents), end(layerButtonMaps[1].at(event.number).keyEvents), begin(currentEvents));
+        }
+
       }
       for(ButtonKeyEvent &buttonEvent : currentEvents){
         if (buttonEvent.keySymbol == 0 && buttonEvent.keyMask == 0) {

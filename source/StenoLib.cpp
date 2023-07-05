@@ -107,6 +107,22 @@ bool isRightAnalogueBottom(int axisValues[]) {
   return axisValues[RY_AXIS] > GAMEPAD_REGISTER_ZONE;
 }
 
+bool isLeftTriggerPulled(int axisValues[]){
+  return axisValues[Z_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isLeftTriggerReleased(int axisValues[]){
+  return axisValues[Z_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
+bool isRightTriggerPulled(int axisValues[]){
+  return axisValues[RZ_AXIS] > GAMEPAD_REGISTER_ZONE;
+}
+
+bool isRightTriggerReleased(int axisValues[]){
+  return axisValues[RZ_AXIS] < -GAMEPAD_REGISTER_ZONE;
+}
+
 string help = "Layer 1\t\t"
   "Layer 2 ⬅️\t\t"
   "Layer 3 ⬆️\t\t"
